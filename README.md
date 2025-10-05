@@ -55,7 +55,7 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 > 📦 Current Version: **v0.1.0**  
 > 🛠 This tool is in **Alpha**: Expect changes and possible bugs as I add new features and improve workflows.  
 > ✅ **Free for Commercial Use**: This tool can be used for both personal and professional projects without restrictions.  
-> ⚠️ **No Resale or Redistribution** — This tool cannot be resold or redistributed for commercial intent.  
+> ⚠️ **No Resale or Redistribution**: This tool cannot be resold or redistributed for commercial intent.  
 
 **Download Notes:**  
 - Alpha builds may have partial or experimental features.  
