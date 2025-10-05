@@ -4,7 +4,7 @@ import unreal
 import json
 import os
 
-unreal.log('MtouLoader module')
+unreal.log('MtoULoader module')
 
 class UnrealLoader:
     ''' Obtain and store the directory of the currently running UE Project. '''
@@ -47,68 +47,72 @@ def import_asset_type():
     Automate import based on the asset type import data set.
     Task is managed by the active Interchange Manager.
     '''
-    # load paths to retrieve external import data set
-    ue_loader = UnrealLoader()
-    ue_path = ue_loader.get_project_path_data()
-    ue_info = os.path.join(ue_loader.get_documents_path(),'UE','Data')
-
-    # load import data set
-    with open(os.path.join(ue_info, 'importSettings.json'), 'r') as file:
-        import_data = json.load(file)
-
     # get unreal's Interchange Manager singleton
     interchange_manager=unreal.InterchangeManager.get_interchange_manager_scripted()
     asset_params=unreal.ImportAssetParameters(is_automated=True)
 
-    # load generic pipelines for public property overrides
-    generic_pipeline=unreal.InterchangeGenericAssetsPipeline()
-    generic_mat_pipeline=generic_pipeline.material_pipeline
-    generic_tex_pipeline=generic_mat_pipeline.texture_pipeline
+    # load paths to retrieve external import data set
+    ue_loader = UnrealLoader()
+    ue_path = ue_loader.get_project_path_data()
+    ue_data = os.path.join(ue_loader.get_documents_path(),'UE','Data','importSettings.json')
 
-    # dynamic data sorter and handler based on asset type # work in progress
-    for importer in import_data:
-        if importer=='OBJ':
-            import_settings=import_data['OBJ']
-             
-        elif importer=='FBX':
-            import_settings=import_data['FBX']
+    if os.path.exists(ue_data):
+        # load import data set
+        with open(ue_data, 'r') as file:
+            import_data = json.load(file)
 
-    # load and store import settings data values
-    folder_path=import_settings['Folder Path'].replace('\\', '/')
-    file_name=import_settings['File Name']
-    imp_materials=import_settings['Import Materials']
-    imp_textures=import_settings['Import Textures']
-    use_source_name=import_settings['Use Source Name']
+        # load generic pipelines for public property overrides
+        generic_pipeline=unreal.InterchangeGenericAssetsPipeline()
+        generic_mat_pipeline=generic_pipeline.material_pipeline
+        generic_tex_pipeline=generic_mat_pipeline.texture_pipeline
 
-    # store full file path using the current UE project 
-    asset_file_path = os.path.join(ue_path['Current Project'], 'Content', folder_path, file_name)
-    # store destination path in unreal's Content Browser
-    destination_path = f"/Game/{folder_path}"
+        # dynamic data sorter and handler based on asset type # work in progress
+        for importer in import_data:
+            if importer=='OBJ':
+                import_settings=import_data['OBJ']
+                
+            elif importer=='FBX':
+                import_settings=import_data['FBX']
 
-    # create source data from stored file path
-    source_data=interchange_manager.create_source_data(asset_file_path)
+        # load and store import settings data values
+        folder_path=import_settings['Folder Path'].replace('\\', '/')
+        file_name=import_settings['File Name']
+        imp_materials=import_settings['Import Materials']
+        imp_textures=import_settings['Import Textures']
+        use_source_name=import_settings['Use Source Name']
 
-    # evaluate if assets names will be set by file name or source file data name 
-    generic_pipeline.use_source_name_for_asset=use_source_name
-    # set import materials bool property based on import data set value
-    generic_mat_pipeline.import_materials=imp_materials
-    # set import textures bool property based on import data set value
-    generic_tex_pipeline.import_textures=imp_textures
-    generic_tex_pipeline.allow_non_power_of_two=True
+        # store full file path using the current UE project 
+        asset_file_path = os.path.join(ue_path['Current Project'], 'Content', folder_path, file_name)
+        # store destination path in unreal's Content Browser
+        destination_path = f"/Game/{folder_path}"
 
-    # use Interchange Import Data for setting generic and specialized asset pipelines
-    asset_import_data=unreal.InterchangeAssetImportData()
-    asset_import_data.set_pipelines([generic_pipeline,
-                                     generic_mat_pipeline,
-                                     generic_tex_pipeline]) # pyright: ignore[reportArgumentType] 
+        # create source data from stored file path
+        source_data=interchange_manager.create_source_data(asset_file_path)
 
-    # override Interchange default import asset parameters, parsing through loaded pipelines 
-    asset_params.override_pipelines=asset_import_data.get_pipelines()
+        # evaluate if assets names will be set by file name or source file data name 
+        generic_pipeline.use_source_name_for_asset=use_source_name
+        # set import materials bool property based on import data set value
+        generic_mat_pipeline.import_materials=imp_materials
+        # set import textures bool property based on import data set value
+        generic_tex_pipeline.import_textures=imp_textures
+        generic_tex_pipeline.allow_non_power_of_two=True
 
-    # execute import
-    interchange_manager.import_asset(destination_path, source_data,
-                                     asset_params)
+        # use Interchange Import Data for setting generic and specialized asset pipelines
+        asset_import_data=unreal.InterchangeAssetImportData()
+        asset_import_data.set_pipelines([generic_pipeline,
+                                        generic_mat_pipeline,
+                                        generic_tex_pipeline]) # pyright: ignore[reportArgumentType] 
+
+        # override Interchange default import asset parameters, parsing through loaded pipelines 
+        asset_params.override_pipelines=asset_import_data.get_pipelines()
+
+        # execute custom import 
+        interchange_manager.import_asset(destination_path, source_data,
+                                        asset_params)
     
+    else:
+        unreal.log_warning('unrealLoader.py: Custom Import Settings data set has not been generated or cannot be located.')
+
 def run_loader():
     ue_loader = UnrealLoader()
     ue_loader.save_path_to_json()
