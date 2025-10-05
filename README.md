@@ -26,7 +26,7 @@ UE Control Rig Shapes Maker & Exporter: ver. 0.2.0
 **Details**: This tool allows you to convert NURBSCurve shapes made in maya into geometry shapes to be used inside Control Rigs in Unreal. Similarly to *MtoU*, it will allow you to easily export your shapes into your Unreal project with ease.
 
 ### Unreal Engine Source Code:
-mtouLoader (Mtou Unreal side): ver. 1.0.0
+unrealLoader (Mtou Unreal side): ver. 1.0.0
 **Details**: This script saves and stores the currently active Unreal project path, required for the exporters to run properly.
 
 Unreal Mtou Reload Button: ver. 0.1.0
@@ -57,7 +57,7 @@ Unreal Mtou Reload Button: ver. 0.1.0
 
 [![Download Release](https://img.shields.io/github/v/release/Smiley-Boy00/smitools?label=Download&color=blue)](https://github.com/Smiley-Boy00/smitools/releases/latest)  
 
-> 📦 Current Version: **v0.1.1**  
+> 📦 Current Version: **v0.1.0**  
 > 🛠 This tool is in **Alpha** — expect changes and possible bugs as I add new features and improve workflows.  
 > ✅ **Free for Commercial Use** — This tool can be used for both personal and professional projects without restrictions.  
 
@@ -68,10 +68,9 @@ Unreal Mtou Reload Button: ver. 0.1.0
 
 ## :speech_balloon: Feedback  
 
-We welcome contributions, bug reports, and feature requests!  
 If you encounter a problem or have an idea for improvement:  
-1. Open an **[Issue](https://github.com/Smiley-Boy00/smitools/issues)** describing your problem, suggestion, or request.  
-2. Include as much detail as possible — logs, screenshots, reproduction steps.  
+1. Open an **[Issue](https://github.com/Smiley-Boy00/mtou/issues)** describing your problem, suggestion, or request.  
+2. Include as much detail as possible: logs, screenshots, reproduction steps.  
 3. If you're a developer, feel free to submit a **Pull Request** with proposed changes.  
 
 💡 Your feedback will influence future releases!  
