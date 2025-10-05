@@ -1,11 +1,9 @@
 import maya.cmds as mc
 import maya.api.OpenMaya as om
 import importlib
+import runpy
 import sys
-from os import path
-
-LOADER=importlib.abc.Loader()
-SCRIPTS_DIR=None
+import os 
 
 def maya_useNewAPI():
     """
@@ -21,32 +19,12 @@ def initializePlugin(pluginObject):
     
     # load the plugin path, find and append the 'Maya_Scripts' as active scripts directory
     plugin_path=plugin_data.loadPath()
-    SCRIPTS_DIR = path.join(plugin_path, 'Maya_Scripts')
-    if SCRIPTS_DIR not in sys.path:
-        sys.path.append(SCRIPTS_DIR)
+
+    if plugin_path not in sys.path:
+        sys.path.append(plugin_path)
 
     print(f'Running MtoU from: {plugin_path}')
-    print(SCRIPTS_DIR)
-    create_menu()
-
-
-def create_menu():
-    ''' Creates Plugin Menu parented to the main Maya Window (Top Section). '''
-    if mc.menu('UExporterMenu', exists = True):
-        mc.deleteUI('UExporterMenu', menu = True)
-
-    main_menu = mc.menu('UExporterMenu', label = 'Exporter Tools', parent = 'MayaWindow', tearOff = True)
-
-    mc.menuItem(label='MayaToUnreal', command = run_mtou, parent = main_menu)
-
-def run_mtou(*args):
-    ''' Load Maya to Unreal Exporter UI and dependant modules. '''
-    print('Run mtou module')
-    # exporter module can only be loaded after obtaining active scripts directory 
-    import mtouExporter # noqa: E402 
-    
-    importlib.reload(mtouExporter)
-    mtouExporter.mtouExporterUI()
+    runpy.run_module('Maya_Scripts', run_name="__main__")
 
 def uninitializePlugin(pluginObject):
     ''' 
@@ -57,9 +35,9 @@ def uninitializePlugin(pluginObject):
 
     # load the plugin path to remove the 'Maya_Scripts' from active scripts directory
     plugin_path=plugin_data.loadPath()
-    scripts_dir = path.join(plugin_path, 'Maya_Scripts')
-    if scripts_dir not in sys.path:
-        sys.path.remove(scripts_dir)
+    scripts_path = os.path.join(plugin_path, 'Maya_Scripts')
+    if plugin_path not in sys.path:
+        sys.path.remove(plugin_path)
 
-    if mc.menu('SmileyMenu', exists = True):
-        mc.deleteUI('SmileyMenu', menu = True)
+    if mc.menu('UExporterMenu', exists = True):
+        mc.deleteUI('UExporterMenu', menu = True)

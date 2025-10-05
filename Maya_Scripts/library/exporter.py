@@ -1,7 +1,7 @@
+from ..library import modules as md
 from abc import ABC
 import maya.cmds as mc
 import maya.mel as mel
-import library.modules as md
 import sys
 import os
 
@@ -18,11 +18,6 @@ class exporterType(ABC):
     def set_file_name(self, file_name: str):
         ''' Create unique file name. '''
         self._file_name=file_name
-
-    ### FOR TESTING ONLY. REMOVE FROM LIVE BUILD.
-    def overwrite_export_path(self, path: str):
-        ''' Overwrite project path with custom path. '''
-        self._export_path = path
 
     def set_UE_project_path(self, ue_path:str, folder_name='MayaImports'):
         ''' Build export project path: 

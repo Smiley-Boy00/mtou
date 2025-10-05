@@ -2,8 +2,8 @@ import maya.cmds as mc
 import os
 import sys
 # import package dependent modules
-import library.modules as md
-from library import exporter
+from .library import modules as md
+from .library import exporter
 
 class mtouExporterUI():
     '''
