@@ -1,5 +1,5 @@
 ![Alt text](https://github.com/Smiley-Boy00/Smiley-Boy00/blob/main/Resources/MtoU_Banner.png?raw=true)
-![Python](https://img.shields.io/badge/python-ffdd54?logo=python&logoColor=white) ![Autodesk Maya](https://img.shields.io/badge/Autodesk%20Maya-00AEEF?logo=autodesk&logoColor=white) ![Unreal Engine](https://img.shields.io/badge/Unreal%20Engine-0E1128?logo=unrealengine&logoColor=white) ![Latest Commit](https://img.shields.io/github/last-commit/Smiley-Boy00/mtou) ![Latest Release](https://img.shields.io/badge/release-coming%20soon-blueviolet) ![OS](https://img.shields.io/badge/OS-Windows-blue?logo=windows) ![Free for Commercial Use](https://img.shields.io/badge/Free%20for%20Commercial%20Use-✔-brightgreen)
+![Python](https://img.shields.io/badge/python-ffdd54?logo=python&logoColor=white) ![Autodesk Maya 2024+](https://img.shields.io/badge/Autodesk%20Maya%202024+-00AEEF?logo=autodesk&logoColor=white) ![Unreal Engine 5.5 | 5.6](https://img.shields.io/badge/Unreal%20Engine%205.5%20|%205.6-0E1128?logo=unrealengine&logoColor=white) ![Latest Commit](https://img.shields.io/github/last-commit/Smiley-Boy00/mtou) ![Latest Release](https://img.shields.io/badge/release-coming%20soon-blueviolet) ![OS](https://img.shields.io/badge/OS-Windows-blue?logo=windows) ![Free for Commercial Use](https://img.shields.io/badge/Free%20for%20Commercial%20Use-✔-brightgreen) ![No Resale](https://img.shields.io/badge/Do%20Not%20Resale-✖-red)
 
 ## Table of Contents
 - [About](#fax-about)
@@ -17,16 +17,17 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 ## :bulb: Tool Source Code and Details
 ### Current Version: 0.1.0
 ### Maya Tools Source Code:
-**Maya to Unreal Exporter (Maya_Scripts/mtouExporter.py): ver. 0.1.0**
+**Maya to Unreal Exporter (Maya_Scripts/mtouExporter.py): ver. 0.1.0**  
+**Compatibility**: Maya 2024 and above
 
 **Details**: Generates Exporter UI that allows you to directly export assets to your currently loaded UE project, input or generate a folder path anywhere inside the UE project's Content folder to import your assets. The tool now automatically generates import settings for Unreal based on your Maya configuration inside the Exporter UI. 'unrealLoader.py' Requires to be run inside a compatible Unreal Engine 5 project for the Maya Exporter to execute.  
-**Compatibility**: Maya 2024 and above  
 
 ### Unreal Engine Source Code:
-**Maya to Unreal Importer (Unreal_Scripts/unrealLoader.py): ver. 0.1.0**
+**Maya to Unreal Importer (Unreal_Scripts/unrealLoader.py): ver. 0.1.0**  
+**Compatibility**: Unreal Engine 5.5 and Unreal Engine 5.6  
 
 **Details**: Saves and stores the currently active Unreal project path, required to be run inside a compatible Unreal Engine 5 project for the Maya Exporter to execute, but Unreal Importer can be executed indepentently as long as import settings data exists (see script documentation for details). The Reload Button functionality has been merged into this script, allowing it to execute reload operations automatically. Additionally, a new import button icon has been added next to the reload button, which runs an automatic importer script using the import settings data created from the Maya tool.  
-**Compatibility**: Unreal Engine 5.5 and Unreal Engine 5.6  
+
 
 ## :bookmark_tabs: :sparkles: How to Install
 [![Installation Video](https://img.shields.io/badge/Installation%20Video-FF0000?logo=youtube&logoColor=white)](https://youtu.be/ALA_9gwyVl4)
@@ -54,6 +55,7 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 > 📦 Current Version: **v0.1.0**  
 > 🛠 This tool is in **Alpha**: Expect changes and possible bugs as I add new features and improve workflows.  
 > ✅ **Free for Commercial Use**: This tool can be used for both personal and professional projects without restrictions.  
+> ⚠️ **No Resale or Redistribution** — This tool cannot be resold or redistributed for commercial intent.  
 
 **Download Notes:**  
 - Alpha builds may have partial or experimental features.  
