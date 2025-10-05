@@ -50,7 +50,7 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 
 :rocket: **Grab the Latest Build Here:**  
 
-[![Download Release](https://img.shields.io/github/v/release/Smiley-Boy00/smitools?label=Download&color=blue)](https://github.com/Smiley-Boy00/mtou/releases/latest)  
+[![Download Release](https://img.shields.io/github/v/release/Smiley-Boy00/mtou?label=Download&color=blue)](https://github.com/Smiley-Boy00/mtou/releases/latest)  
 
 > 📦 Current Version: **v0.1.0**  
 > 🛠 This tool is in **Alpha**: Expect changes and possible bugs as I add new features and improve workflows.  
