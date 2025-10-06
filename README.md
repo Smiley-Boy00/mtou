@@ -10,7 +10,7 @@
 - [Contacts](#-contacts)
 
 ## :fax: About
-MtoU (Maya to Unreal) is a Python-based tool package that enables seamless export from Autodesk Maya to Unreal Engine. Originally developed as part of the Smiley Tools Plugin, this package has now been isolated for independent development. This new version has been fully refactored, optimized for better and now includes an automatic importer script for Unreal Engine to streamline the workflow.
+MtoU (Maya to Unreal) is a Python-based tool package that enables seamless export from Autodesk Maya to Unreal Engine. Originally developed as part of the Smiley Tools Plugin, this package has now been isolated for independent development. This new version has been fully refactored, optimized for better performance and now includes an automatic importer script for Unreal Engine to streamline the workflow.
 
 **Important**: As of the latest release, manual installation/linking is required for Unreal Engine integration (unrealLoader.py).
 
