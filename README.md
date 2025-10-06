@@ -30,7 +30,7 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 
 
 ## :bookmark_tabs: :sparkles: How to Install
-[![Installation Video](https://img.shields.io/badge/Installation%20Video-FF0000?logo=youtube&logoColor=white)](https://youtu.be/ALA_9gwyVl4)
+[![Installation Video](https://img.shields.io/badge/Installation%20Video-FF0000?logo=youtube&logoColor=white)](https://youtu.be/UFCAix7e9P0?si=rGiChizTKa-uswKb)
 
 ### Maya Side:
 > - Extract **mtou** and place the folder contents into your Maya directory folder and inside your plug-ins folder, if no plug-ins folder exists create one:
