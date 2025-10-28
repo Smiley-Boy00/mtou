@@ -29,16 +29,14 @@ class exporterType(ABC):
             os.makedirs(self._export_path)
 
     def move_sel_to_origin(self, mesh_selection):
-        ''' Move a mesh array to world origin: [0,0,0]. ''' 
-        for mesh in mesh_selection:
+        ''' Move a mesh to world origin: [0,0,0]. ''' 
             # store every mesh with their initial translation data values (location)
-            self._mesh_placement[mesh] = mc.xform(mesh, worldSpace=True, query=True, translation=True)
-            md.move_to_origin(mesh)
+        self._mesh_placement[mesh_selection] = mc.xform(mesh_selection, worldSpace=True, query=True, translation=True)
+        md.move_to_origin(mesh_selection)
 
     def place_sel_to_original_pos(self, mesh_selection):
-        ''' Move a mesh array to initial translation data values (location). ''' 
-        for mesh in mesh_selection:
-            md.place_mesh_back(self._mesh_placement[mesh], mesh)
+        ''' Move a mesh to initial translation data values (location). ''' 
+        md.place_mesh_back(self._mesh_placement[mesh_selection], mesh_selection)
 
     def export(self):
         ''' Perform the type dependant export. '''

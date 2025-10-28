@@ -70,6 +70,13 @@ class mtouExporterUI():
                                                 columnAlign=[1, 'left'],
                                                 columnWidth=[1, 70])
 
+        self.batchButton = mc.checkBox('batch_export', label='Export Selected into Separate Files',
+                                       onc=lambda args:self.switch_bool_state('batch_export', state=True),
+                                       ofc=lambda args:self.switch_bool_state('batch_export'))
+        
+        # connect checker identifier to it's boolean value for precise handling and callback
+        self.checkerSettings['batch_export'] = False
+
         # create list comprehension of all the available FBX Maya export versions
         self.fbx_versions=[version for version in self.fbx.get_fbx_versions()]
         
@@ -131,10 +138,12 @@ class mtouExporterUI():
                                                                  (self.unreal_frame, 'left', 5), (self.unreal_frame, 'right', 5),
                                                                 (self.exportType_tab, 'left', 5), (self.exportType_tab, 'top', 10),
                                                                 (self.filename_field, 'left', 5), (self.filename_field, 'right', 5),
-                                                                (self.foldername_field, 'left', 5), (self.foldername_field, 'right', 5)],
+                                                                (self.foldername_field, 'left', 5), (self.foldername_field, 'right', 5),
+                                                                (self.batchButton, 'left', 200), (self.batchButton, 'right', 5)],
                                                     attachControl = [(self.filename_field, 'top', 10, self.exportType_tab),
                                                                      (self.foldername_field, 'top', 5, self.filename_field),
-                                                                     (self.maya_frame, 'top', 10, self.foldername_field),
+                                                                     (self.batchButton, 'top', 5, self.foldername_field),
+                                                                     (self.maya_frame, 'top', 10, self.batchButton),
                                                                      (self.unreal_frame, 'top', 10, self.maya_frame),])
         
         mc.formLayout(self.main_layout, edit=True, attachForm = [(self.export_button, 'left', 5), (self.export_button, 'right', 5),
@@ -229,7 +238,6 @@ class mtouExporterUI():
         else:
             raise ValueError(f"{frame} is not a frame entity.")
 
-        
         if mc.control(checkerID, exists=True):
             # enable visibility of check box and separator if it has already been created
             mc.control(checkerID, edit=True, visible=True, enable=True, parent=parentUI)
@@ -298,6 +306,8 @@ class mtouExporterUI():
     def disable_ui_elements(self):
         ''' Turns visibility and functionality off for stored UI elements.'''
         for checkerID in self.checkerSettings:
+            if checkerID=='batch_export':
+                continue
             mc.control(checkerID, 
                        edit=True, visible=False, enable=False)
         for menuElement in self.menuSettings:
@@ -364,11 +374,7 @@ class mtouExporterUI():
             mc.warning('Please name for your file for export.')
             return
 
-        # if the user didn't add '.fbx' at the end of the file name, add it
-        if not mesh_file.endswith('.fbx'):
-            mesh_file += ".fbx"
-
-         # load project path data, store active UE project path
+        # load project path data, store active UE project path
         ue_dict = md.load_data(self.folder_path, 'ue_path.json')
         ue_project_path = ue_dict.get('Current Project')
 
@@ -380,12 +386,7 @@ class mtouExporterUI():
             mc.warning('Please provide a folder name to export.')
             return
 
-        self.fbx.set_file_name(mesh_file)
-
         move_mesh = self.checkerSettings['move_to_origin']
-        if move_mesh:
-            # move mesh selection to world origin [0,0,0]
-            self.fbx.move_sel_to_origin(mesh_selection)
 
         # evaluate user's fbx settings before exporting mesh 
         # evaluate if the mesh will be exported with Smoothing Groups information data
@@ -431,41 +432,85 @@ class mtouExporterUI():
         if self.import_data_exists:
             # load and store import settings data set
             import_data = md.load_data(self.folder_path, 'importSettings.json')
-
         else:
             # create empty import settings data set
             import_data = {}
 
-        if 'FBX' in import_data:
-            # load fbx import settings data set
-            fbx_import_settings = import_data['FBX']
+        # clear data set; avoids conflict with latest version of importer script
+        import_data.clear()
+        # create fbx import settings data set
+        fbx_import = {}
+        import_data['FBX'] = fbx_import
+        import_settings={}
+
+        batch_export=self.checkerSettings['batch_export']
+
+        if batch_export:
+            iter_val=0
+            for mesh in mesh_selection:
+                iter_val+=1
+                print(mesh)
+                mc.select(mesh)
+                if move_mesh:
+                    # move mesh selection to world origin [0,0,0]
+                    self.fbx.move_sel_to_origin(mesh)
+
+                if '.fbx' in mesh_file:
+                    mesh_file=mesh_file.split('.fbx')[0]
+
+                iter_file_name = mesh_file + f"_{iter_val}.fbx"
+                self.fbx.set_file_name(iter_file_name)
+                # change & store file name and folder path values 
+                fbx_import[iter_file_name]=import_settings
+                import_settings['Folder Path']=folder_name
+
+                # overwrite values with check box selection (user settings)
+                import_settings['Import Materials']=self.checkerSettings['imp_materials']
+                import_settings['Import Textures']=self.checkerSettings['imp_textures']
+                import_settings['Use Source Name']=self.checkerSettings['use_source_name']
+        
+                # save the user import settings for unreal importer
+                md.save_data(self.folder_path, 'importSettings.json', import_data)
+
+                print(import_settings)
+
+                self.fbx.export()
+
+                if move_mesh:
+                    # move mesh selection back to the original location prior placing it at world origin
+                    self.fbx.place_sel_to_original_pos(mesh)
 
         else:
-            # clear data set; avoids conflict with latest version of importer script
-            import_data.clear()
-            # create fbx import settings data set
-            fbx_import_settings = {}
-            import_data['FBX'] = fbx_import_settings
+            if move_mesh:
+                # move mesh selection to world origin [0,0,0]
+                for mesh in mesh_selection:
+                    self.fbx.move_sel_to_origin(mesh)
 
-        # change & store file name and folder path values 
-        fbx_import_settings['Folder Path']=folder_name
-        fbx_import_settings['File Name']=mesh_file
+            # if the user didn't add '.fbx' at the end of the file name, add it
+            if not mesh_file.endswith('.fbx'):
+                mesh_file += ".fbx"
+            self.fbx.set_file_name(mesh_file)
 
-        # overwrite values with check box selection (user settings)
-        fbx_import_settings['Import Materials']=self.checkerSettings['imp_materials']
-        fbx_import_settings['Import Textures']=self.checkerSettings['imp_textures']
-        fbx_import_settings['Use Source Name']=self.checkerSettings['use_source_name']
-        
-        # save the user import settings for unreal importer
-        md.save_data(self.folder_path, 'importSettings.json', import_data)
+            # change & store file name and folder path values 
+            fbx_import[mesh_file]=import_settings
+            import_settings['Folder Path']=folder_name
 
-        print(fbx_import_settings)
+            # overwrite values with check box selection (user settings)
+            import_settings['Import Materials']=self.checkerSettings['imp_materials']
+            import_settings['Import Textures']=self.checkerSettings['imp_textures']
+            import_settings['Use Source Name']=self.checkerSettings['use_source_name']
 
-        self.fbx.export()
+            # save the user import settings for unreal importer
+            md.save_data(self.folder_path, 'importSettings.json', import_data)
 
-        if move_mesh:
-            # move mesh selection back to the original location prior placing it at world origin
-            self.fbx.place_sel_to_original_pos(mesh_selection)
+            print(import_settings)
+
+            self.fbx.export()
+
+            if move_mesh:
+                # move mesh selection back to the original location prior placing it at world origin
+                for mesh in mesh_selection:
+                    self.fbx.place_sel_to_original_pos(mesh)
 
         # clear selection
         mc.select(cl=True)
@@ -493,9 +538,6 @@ class mtouExporterUI():
         if not mesh_file:
             mc.warning('Please name for your file for export.')
             return
-        # if the user didn't add '.obj' at the end of the file name, add it
-        if not mesh_file.endswith('.obj'):
-            mesh_file += ".obj"
         
          # load project path data, store active UE project path
         ue_dict = md.load_data(self.folder_path, 'ue_path.json')
@@ -509,19 +551,7 @@ class mtouExporterUI():
             mc.warning('Please provide a folder name to export.')
             return     
 
-        self.obj.set_file_name(mesh_file)        
-
         move_mesh = self.checkerSettings['move_to_origin']
-        if move_mesh:
-            # move mesh selection to world origin [0,0,0]
-            self.obj.move_sel_to_origin(mesh_selection)
-
-        # create temporary transform node 
-        tempGRP=mc.group(empty=True)
-        for obj in mesh_selection:
-            # parent mesh to transform node and rotate the node 90 degrees
-            mc.parent(obj, tempGRP)
-            mc.rotate(90,0,0, tempGRP)
 
         # evaluate if mesh will contain group information data
         if self.checkerSettings['groups']:
@@ -546,64 +576,121 @@ class mtouExporterUI():
         if self.import_data_exists:
             # load and store import settings data set
             import_data = md.load_data(self.folder_path, 'importSettings.json')
-
         else:
             # create empty import settings data set
             import_data = {}
 
-        if 'OBJ' in import_data:
-            # load obj import settings data set
-            obj_import_settings = import_data['OBJ']
-
-        else:
-            # clear data set; avoids conflict with latest version of importer script
-            import_data.clear()
-            # create obj import settings data set
-            obj_import_settings = {}
-            import_data['OBJ'] = obj_import_settings
-
-        # change & store file name and folder path values 
-        obj_import_settings['Folder Path']=folder_name
-        obj_import_settings['File Name']=mesh_file
-
-        # overwrite values with check box selection (user settings)
-        obj_import_settings['Import Materials']=self.checkerSettings['imp_materials']
-        obj_import_settings['Import Textures']=self.checkerSettings['imp_textures']
-        obj_import_settings['Use Source Name']=self.checkerSettings['use_source_name']
-
-        # save the user import settings for unreal importer
-        md.save_data(self.folder_path, 'importSettings.json', import_data)
-
-        print(obj_import_settings)
-
-        # evaluate the user's settings and store them in a tuple for exporting
-        self.obj.export(obj_groups, obj_ptgroups, obj_materials, 
-                        obj_smoothing, obj_normals, 
-                        include_textures=self.checkerSettings['imp_textures'])
         
-        # undo rotation of temporary transform node
-        mc.rotate(0,0,0, tempGRP)
-        for obj in mesh_selection:
-            # unparent mesh to transform node and delete the node 
-            mc.parent(obj, world=True)
+        # clear data set; avoids conflict with latest version of importer script
+        import_data.clear()
+        # create obj import settings data set
+        obj_import = {}
+        import_data['OBJ'] = obj_import
+        import_settings={}
+
+        batch_export=self.checkerSettings['batch_export']
+
+        if batch_export:
+            iter_val=0
+            for mesh in mesh_selection:
+                iter_val+=1
+                print(mesh)
+                mc.select(mesh)
+                # create temporary transform node 
+                tempGRP=mc.group(empty=True)
+                # parent mesh to transform node and rotate the node 90 degrees
+                mc.parent(mesh, tempGRP)
+                mc.rotate(90,0,0, tempGRP)
+
+                if move_mesh:
+                    # move mesh selection to world origin [0,0,0]
+                    self.obj.move_sel_to_origin(mesh)
+
+                if '.obj' in mesh_file:
+                    mesh_file = mesh_file.split('.obj')[0]
+
+                iter_file_name = mesh_file + f"_{iter_val}.obj"
+                self.obj.set_file_name(iter_file_name)
+                # change & store file name and folder path values 
+                obj_import[iter_file_name]=import_settings
+                import_settings['Folder Path']=folder_name
+
+                # overwrite values with check box selection (user settings)
+                import_settings['Import Materials']=self.checkerSettings['imp_materials']
+                import_settings['Import Textures']=self.checkerSettings['imp_textures']
+                import_settings['Use Source Name']=self.checkerSettings['use_source_name']
+        
+                # save the user import settings for unreal importer
+                md.save_data(self.folder_path, 'importSettings.json', import_data)
+
+                print(import_settings)
+
+                # evaluate the user's settings and store them in a tuple for exporting
+                self.obj.export(obj_groups, obj_ptgroups, obj_materials, 
+                                obj_smoothing, obj_normals, 
+                                include_textures=self.checkerSettings['imp_textures'])
+
+                # undo rotation of temporary transform node
+                mc.rotate(0,0,0, tempGRP)
+                # unparent mesh to transform node and delete the node 
+                mc.parent(mesh, world=True)
+                mc.delete(tempGRP)
+
+                if move_mesh:
+                    # move mesh selection back to the original location prior placing it at world origin
+                    self.obj.place_sel_to_original_pos(mesh)
+
+        else: 
+            # create temporary transform node 
+            tempGRP=mc.group(empty=True)
+            for obj in mesh_selection:
+                # parent mesh to transform node and rotate the node 90 degrees
+                mc.parent(obj, tempGRP)
+                mc.rotate(90,0,0, tempGRP)
+
+            if move_mesh:
+            # move mesh selection to world origin [0,0,0]
+                for mesh in mesh_selection:
+                    self.obj.move_sel_to_origin(mesh)
+            # if the user didn't add '.obj' at the end of the file name, add it
+            if not mesh_file.endswith('.obj'):
+                mesh_file += ".obj"
+            self.obj.set_file_name(mesh_file)
+
+            # change & store file name and folder path values 
+            obj_import[mesh_file]=import_settings
+            import_settings['Folder Path']=folder_name
+
+            # overwrite values with check box selection (user settings)
+            import_settings['Import Materials']=self.checkerSettings['imp_materials']
+            import_settings['Import Textures']=self.checkerSettings['imp_textures']
+            import_settings['Use Source Name']=self.checkerSettings['use_source_name']
+
+            # save the user import settings for unreal importer
+            md.save_data(self.folder_path, 'importSettings.json', import_data)
+
+            print(import_settings)
+
+            # evaluate the user's settings and store them in a tuple for exporting
+            self.obj.export(obj_groups, obj_ptgroups, obj_materials, 
+                            obj_smoothing, obj_normals, 
+                            include_textures=self.checkerSettings['imp_textures'])
+        
+            # undo rotation of temporary transform node
+            mc.rotate(0,0,0, tempGRP)
+            for obj in mesh_selection:
+                # unparent mesh to transform node and delete the node 
+                mc.parent(obj, world=True)
             mc.delete(tempGRP)
 
-        # move mesh selection back to the original location prior placing it at world origin
-        self.obj.place_sel_to_original_pos(mesh_selection)
+            # move mesh selection back to the original location prior placing it at world origin
+            if move_mesh:
+                for mesh in mesh_selection:
+                    self.obj.place_sel_to_original_pos(mesh)
 
         # clear selection
         mc.select(cl=True)
 
-    def __debugger(self, *args):
-        '''
-        For debugging purposes only. 
-        REMOVE FROM LIVE BUILD.
-        '''
-        smooth_grps=mc.checkBox(self.checkerSettings['smooth_groups'], edit=True, 
-                                onc=lambda arg:self.switch_bool_state('smooth_groups',state=True), 
-                                ofc=lambda arg:self.switch_bool_state('smooth_groups'))
-        
-        print(smooth_grps)
         
 
         
