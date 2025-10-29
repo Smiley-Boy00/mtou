@@ -646,7 +646,7 @@ class mtouExporterUI():
             for obj in mesh_selection:
                 # parent mesh to transform node and rotate the node 90 degrees
                 mc.parent(obj, tempGRP)
-                mc.rotate(90,0,0, tempGRP)
+            mc.rotate(90,0,0, tempGRP)
 
             if move_mesh:
             # move mesh selection to world origin [0,0,0]
