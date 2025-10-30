@@ -15,7 +15,7 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 **Important**: As of the latest release, manual installation/linking is required for Unreal Engine integration (unrealLoader.py).
 
 ## :bulb: Tool Source Code and Details
-### Current Version: 0.1.0
+### Current Release: 0.2.1
 ### Maya Tools Source Code:
 **Maya to Unreal Exporter (Maya_Scripts/mtouExporter.py): ver. 0.1.0**  
 **Compatibility**: Maya 2024 and above
