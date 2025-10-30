@@ -64,11 +64,19 @@ class mtouExporterUI():
                                               columnAlign=[1, 'left'],
                                               columnWidth=[1, 55])
         self.foldername_field = mc.textFieldGrp(label='Folder Name:', 
-                                                placeholderText = 'Name the Contents Folder', 
-                                                text = 'MayaImports',
+                                                placeholderText = 'Folder name inside the Content path',
                                                 adjustableColumn=2,
                                                 columnAlign=[1, 'left'],
                                                 columnWidth=[1, 70])
+        
+        self.prefix_field = mc.textFieldGrp(label='Prefix: ',
+                                            adjustableColumn=2,
+                                            columnAlign=[1, 'left'],
+                                            columnWidth2=[35, 100],)
+        self.suffix_field = mc.textFieldGrp(label='Suffix: ',
+                                            adjustableColumn=2,
+                                            columnAlign=[1, 'left'],
+                                            columnWidth2=[35, 100])
 
         self.batchButton = mc.checkBox('batch_export', label='Export Selected into Separate Files',
                                        onc=lambda args:self.switch_bool_state('batch_export', state=True),
@@ -134,15 +142,20 @@ class mtouExporterUI():
                                        command=self.do_FBX_export, parent=self.main_layout)
 
         # align and place the layout's frames and elements in the display window    
-        mc.formLayout(self.main_layout, edit=True, attachForm = [(self.maya_frame, 'left', 5), (self.maya_frame, 'right', 5),
-                                                                 (self.unreal_frame, 'left', 5), (self.unreal_frame, 'right', 5),
-                                                                (self.exportType_tab, 'left', 5), (self.exportType_tab, 'top', 10),
-                                                                (self.filename_field, 'left', 5), (self.filename_field, 'right', 5),
-                                                                (self.foldername_field, 'left', 5), (self.foldername_field, 'right', 5),
-                                                                (self.batchButton, 'left', 200), (self.batchButton, 'right', 5)],
+        mc.formLayout(self.main_layout, edit=True, attachForm = [(self.exportType_tab, 'left', 5), (self.exportType_tab, 'top', 10),
+                                                                 (self.filename_field, 'left', 5), (self.filename_field, 'right', 5),
+                                                                 (self.foldername_field, 'left', 5), (self.foldername_field, 'right', 5),
+                                                                 (self.prefix_field, 'left', 135), ],
                                                     attachControl = [(self.filename_field, 'top', 10, self.exportType_tab),
                                                                      (self.foldername_field, 'top', 5, self.filename_field),
-                                                                     (self.batchButton, 'top', 5, self.foldername_field),
+                                                                     (self.prefix_field, 'top', 5, self.foldername_field),
+                                                                     (self.suffix_field, 'top', 5, self.foldername_field),
+                                                                     (self.suffix_field, 'left', 15, self.prefix_field),])
+        
+        mc.formLayout(self.main_layout, edit=True, attachForm = [(self.batchButton, 'left', 200), (self.batchButton, 'right', 5),
+                                                                 (self.maya_frame, 'left', 5), (self.maya_frame, 'right', 5),
+                                                                 (self.unreal_frame, 'left', 5), (self.unreal_frame, 'right', 5),],
+                                                    attachControl = [(self.batchButton, 'top', 5, self.prefix_field),
                                                                      (self.maya_frame, 'top', 10, self.batchButton),
                                                                      (self.unreal_frame, 'top', 10, self.maya_frame),])
         
@@ -443,22 +456,31 @@ class mtouExporterUI():
         import_data['FBX'] = fbx_import
         import_settings={}
 
+        # get prefix and suffix text value
+        prefix_name=mc.textFieldGrp(self.prefix_field, query=True, text=True)
+        suffix_name=mc.textFieldGrp(self.suffix_field, query=True, text=True)
+
         batch_export=self.checkerSettings['batch_export']
 
         if batch_export:
             iter_val=0
             for mesh in mesh_selection:
+                main_name=mesh_file
                 iter_val+=1
-                print(mesh)
                 mc.select(mesh)
                 if move_mesh:
                     # move mesh selection to world origin [0,0,0]
                     self.fbx.move_sel_to_origin(mesh)
 
-                if '.fbx' in mesh_file:
-                    mesh_file=mesh_file.split('.fbx')[0]
+                # concatenate prefix and/or prefix is value exists
+                if prefix_name:
+                    main_name = prefix_name+main_name
+                if '.fbx' in main_name:
+                    main_name=main_name.split('.fbx')[0]
+                if suffix_name:
+                    main_name+=suffix_name
 
-                iter_file_name = mesh_file + f"_{iter_val}.fbx"
+                iter_file_name = main_name + f"_{iter_val}.fbx"
                 self.fbx.set_file_name(iter_file_name)
                 # change & store file name and folder path values 
                 fbx_import[iter_file_name]=import_settings
@@ -486,9 +508,17 @@ class mtouExporterUI():
                 for mesh in mesh_selection:
                     self.fbx.move_sel_to_origin(mesh)
 
+            # concatenate prefix and/or prefix is value exists
+            if prefix_name:
+                mesh_file = prefix_name+mesh_file
+            if '.fbx' in mesh_file:
+                    mesh_file=mesh_file.split('.fbx')[0]
+            if suffix_name:
+                mesh_file+=suffix_name
             # if the user didn't add '.fbx' at the end of the file name, add it
             if not mesh_file.endswith('.fbx'):
                 mesh_file += ".fbx"
+
             self.fbx.set_file_name(mesh_file)
 
             # change & store file name and folder path values 
@@ -580,7 +610,6 @@ class mtouExporterUI():
             # create empty import settings data set
             import_data = {}
 
-        
         # clear data set; avoids conflict with latest version of importer script
         import_data.clear()
         # create obj import settings data set
@@ -588,13 +617,17 @@ class mtouExporterUI():
         import_data['OBJ'] = obj_import
         import_settings={}
 
+        # get prefix and suffix text value
+        prefix_name=mc.textFieldGrp(self.prefix_field, query=True, text=True)
+        suffix_name=mc.textFieldGrp(self.suffix_field, query=True, text=True)
+
         batch_export=self.checkerSettings['batch_export']
 
         if batch_export:
             iter_val=0
             for mesh in mesh_selection:
+                main_name=mesh_file
                 iter_val+=1
-                print(mesh)
                 mc.select(mesh)
                 # create temporary transform node 
                 tempGRP=mc.group(empty=True)
@@ -606,10 +639,15 @@ class mtouExporterUI():
                     # move mesh selection to world origin [0,0,0]
                     self.obj.move_sel_to_origin(mesh)
 
+                # concatenate prefix and/or prefix is value exists
+                if prefix_name:
+                    main_name = prefix_name+main_name
                 if '.obj' in mesh_file:
-                    mesh_file = mesh_file.split('.obj')[0]
+                    mesh_file=mesh_file.split('.obj')[0]
+                if suffix_name:
+                    main_name+=suffix_name
 
-                iter_file_name = mesh_file + f"_{iter_val}.obj"
+                iter_file_name = main_name + f"_{iter_val}.obj"
                 self.obj.set_file_name(iter_file_name)
                 # change & store file name and folder path values 
                 obj_import[iter_file_name]=import_settings
@@ -652,6 +690,13 @@ class mtouExporterUI():
             # move mesh selection to world origin [0,0,0]
                 for mesh in mesh_selection:
                     self.obj.move_sel_to_origin(mesh)
+            # concatenate prefix and/or prefix is value exists
+            if prefix_name:
+                mesh_file = prefix_name+mesh_file
+            if '.obj' in mesh_file:
+                mesh_file=mesh_file.split('.obj')[0]
+            if suffix_name:
+                mesh_file+=suffix_name
             # if the user didn't add '.obj' at the end of the file name, add it
             if not mesh_file.endswith('.obj'):
                 mesh_file += ".obj"
