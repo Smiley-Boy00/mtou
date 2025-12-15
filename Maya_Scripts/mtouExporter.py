@@ -456,7 +456,7 @@ class mtouExporterUI():
         # get root joint data from scene
         # build root joint selection menu
         jnts=['None', *md.get_root_jnts()]
-        self.create_or_show_menu('root_jnts', label='Select Joint Rig:', layoutID=self.unreal_column,
+        self.create_or_show_menu('root_jnts', label='Select Joint Root:', layoutID=self.unreal_column,
                                  items=jnts, separator=False)
         # set module function to select root joint in scene when changed
         mc.optionMenu('root_jnts', edit=True, 
