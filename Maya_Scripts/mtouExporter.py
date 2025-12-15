@@ -588,6 +588,7 @@ class mtouExporterUI():
         # activate import animation and enable its dependencies, if not already active 
         if state and not mc.checkBox('imp_anim', query=True, value=True):
             mc.checkBox('imp_anim', edit=True, value=True)
+            self.checkerSettings['imp_anim']=True
             self.anim_build_state('unreal', 'imp_anim', 'imp_only_anims', state=True)
 
         # build bake anim checkbox and anim clips layout
@@ -816,11 +817,13 @@ class mtouExporterUI():
         import_data['FBX'] = fbx_import
 
         if self.checkerSettings.get('unused_jnts'):
-            # get the root joints from selection and get their unused joints
-            jnts_data=md.get_unused_joints_in_hier(mesh_selection)
-            if jnts_data:
-                # binds unused joints with 0 influence to skinned meshes before export
-                md.bind_unused_joints(jnts_data) # experimental; requires further testing
+            for mesh in mesh_selection:
+                if mesh in md.get_root_jnts():
+                    # get the root joints from selection and get their unused joints
+                    jnts_data=md.get_unused_joints_in_hier([mesh])
+                    if jnts_data:
+                        # binds unused joints with 0 influence to skinned meshes before export
+                        md.bind_unused_joints(jnts_data) # experimental; requires further testing
 
         if batch_export:
             iter_val=0
@@ -829,17 +832,15 @@ class mtouExporterUI():
                 iter_val+=1
                 mc.select(mesh)
                 if move_mesh:
-                    # move mesh selection to world origin [0,0,0]
-                    self.fbx.move_sel_to_origin(mesh)
+                    if mesh in md.get_root_jnts() or mc.nodeType(mesh) != 'joint':
+                        self.fbx.move_sel_to_origin(mesh)
 
                 # evaluate if animations will be exported
                 if self.checkerSettings.get('export_anim'):
-                    skinned_meshes=md.get_skinned_meshes([mesh])
                     if self.checkerSettings.get('bake_anim'):
                         # bake every animation frame 
                         self.fbx.export_bake_anim(value=True)
                 else:
-                    skinned_meshes=[]
                     # do export without animation
                     self.fbx.exclude_anim()
 
@@ -847,30 +848,31 @@ class mtouExporterUI():
                                                     prefix=prefix_name, suffix=suffix_name)
 
                 iter_file_name = main_name + f"_{iter_val}.fbx"
-                self.fbx.set_file_name(iter_file_name)
 
-                import_settings=self.create_import_data(importer='FBX', skeleton_data=self.get_ue_data('skeletons'),
-                                                        skinned_set=skinned_meshes) 
+                import_settings=self.create_import_data(importer='FBX', skeleton_data=self.get_ue_data('skeletons'),) 
  
                 # change & store file name and folder path values 
                 fbx_import[iter_file_name]=import_settings
                 import_settings['Folder Path']=folder_name
 
+                self.fbx.set_file_name(iter_file_name)
+                mc.select(mesh)
                 self.fbx.export()
 
                 if move_mesh:
                     # move mesh selection back to the original location prior to placing it at world origin
-                    self.fbx.place_sel_to_original_pos(mesh)
+                    if mesh in md.get_root_jnts() or mc.nodeType(mesh) != 'joint':
+                        self.fbx.place_sel_to_original_pos(mesh)
 
         else:
             if move_mesh:
                 # move mesh selection to world origin [0,0,0]
                 for mesh in mesh_selection:
-                    self.fbx.move_sel_to_origin(mesh)
+                    if mesh in md.get_root_jnts() or mc.nodeType(mesh) != 'joint':
+                        self.fbx.move_sel_to_origin(mesh)
 
             # evaluate if animations will be exported
             if self.checkerSettings.get('export_anim'):
-                skinned_meshes=md.get_skinned_meshes(mesh_selection)
                 # check created clips and export each one as a separate file
                 if clips_data:
                     for clip in clips_data:
@@ -900,12 +902,13 @@ class mtouExporterUI():
                         file_name=self.set_export_file_name(clips_value[0], extension='.fbx',
                                                             prefix=prefix_name, suffix=suffix_name)
                         import_settings=self.create_import_data(importer='FBX', animation_clips=[clips_value[1], clips_value[2]],
-                                                                skeleton_data=self.get_ue_data('skeletons'), skinned_set=skinned_meshes)
+                                                                skeleton_data=self.get_ue_data('skeletons'),)
                         # change & store file name and folder path values 
                         fbx_import[file_name]=import_settings
                         import_settings['Folder Path']=folder_name
 
                         self.fbx.set_file_name(file_name)
+                        mc.select(mesh_selection)
                         self.fbx.export()
                 else:
                     # export animations without frame range
@@ -915,13 +918,13 @@ class mtouExporterUI():
 
                     file_name=self.set_export_file_name(mesh_file, extension='.fbx',
                                                         prefix=prefix_name, suffix=suffix_name)
-                    import_settings=self.create_import_data(importer='FBX', skeleton_data=self.get_ue_data('skeletons'),
-                                                            skinned_set=skinned_meshes)
+                    import_settings=self.create_import_data(importer='FBX', skeleton_data=self.get_ue_data('skeletons'),)
                     # change & store file name and folder path values 
                     fbx_import[file_name]=import_settings
                     import_settings['Folder Path']=folder_name
 
                     self.fbx.set_file_name(file_name)
+                    mc.select(mesh_selection)
                     self.fbx.export()
 
             else:
@@ -937,12 +940,14 @@ class mtouExporterUI():
                 import_settings['Folder Path']=folder_name
 
                 self.fbx.set_file_name(file_name)
+                mc.select(mesh_selection)
                 self.fbx.export()
 
             if move_mesh:
                 # move mesh selection back to the original location prior placing it at world origin
                 for mesh in mesh_selection:
-                    self.fbx.place_sel_to_original_pos(mesh)
+                    if mesh in md.get_root_jnts() or mc.nodeType(mesh) != 'joint':
+                        self.fbx.place_sel_to_original_pos(mesh)
 
         # save the user import settings for unreal importer
         md.save_data(self.folder_path, 'importSettings.json', import_data)
@@ -1140,7 +1145,7 @@ class mtouExporterUI():
         return file_name
 
     def create_import_data(self, importer:str='OBJ', animation_clips:list|None=None, 
-                           skeleton_data:dict|None=None, skinned_set:list=[]):
+                           skeleton_data:dict|None=None):
         ''' 
         Handles the configuration of the import settings data set.
         Defaults to OBJ importer unless otherwise specified.
@@ -1156,20 +1161,17 @@ class mtouExporterUI():
 
         # set FBX specific import settings
         if importer=='FBX':
+            if import_settings['Import Static Mesh'] and not import_settings['Import Skeletal Mesh']:
+                import_settings['Force Mesh Type']=1
             import_settings['Import Animations']=self.checkerSettings.get('imp_anim')
             if import_settings['Import Animations']:
-                # set additional animation import settings if skinned meshes exist
-                if skinned_set:
-                    import_settings['Import Only Animations']=self.checkerSettings.get('imp_only_anims')
-                    # get animation clips frame range
-                    if animation_clips:
-                        import_settings['Animation Range']=animation_clips
-                    else:
-                        import_settings['Animation Range']=None
+                # set additional animation import settings 
+                import_settings['Import Only Animations']=self.checkerSettings.get('imp_only_anims')
+                # get animation clips frame range
+                if animation_clips:
+                    import_settings['Animation Range']=animation_clips
                 else:
-                    # disable animation and set to only import static mesh
-                    import_settings['Import Animations']=False
-                    import_settings['Force Mesh Type']=1
+                    import_settings['Animation Range']=None
 
             # query and set skeleton asset from UE project skeletons data, if available
             skeleton = mc.optionMenu(self.menuSettings['skeleton'], query=True, value=True)

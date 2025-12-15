@@ -51,6 +51,10 @@ def select_root_jnt(root_jnt:str, contains_list:bool=False, jnts:list=[]) -> Non
         print(f'{root_jnt} Selected')
 
 def get_unused_joints_in_hier(root_jtns:list):
+    ''' 
+    Returns a list of joints that have no bind data. 
+    Requires a joint hierarchy list.
+    '''
     unbinded_jnts={}
     for root_jnt in root_jtns:
         if mc.nodeType(root_jnt) != 'joint':
@@ -78,8 +82,18 @@ def get_unused_joints_in_hier(root_jtns:list):
     return unbinded_jnts
 
 def bind_unused_joints(root_jnts_data:dict):
+    '''
+    Binds the joints that have no bind data.
+    Requires a dictionary of unused joints in hierarchy.
+    '''
     for root_jnt in root_jnts_data:
         connections=mc.listConnections(f'{root_jnt}.worldMatrix[0]', type='skinCluster')
+        if not connections:
+            hierarchy=mc.listRelatives(root_jnt, allDescendents=True, type='joint', fullPath=True)
+            for jnt in hierarchy:
+                connections=mc.listConnections(f'{jnt}.worldMatrix[0]', type='skinCluster')
+                if connections:
+                    break
         print(connections)
     
     for unbinded_joint in root_jnts_data.get(root_jnt):

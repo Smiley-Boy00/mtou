@@ -196,16 +196,20 @@ def import_asset_type():
                     generic_mesh_anim_pipeline.import_meshes_in_bone_hierarchy=import_settings.get('Meshes in Bone Hierarchy')
 
                     skeleton_data=import_settings.get('Skeleton')
+                    skeleton_asset=None
                     if not skeleton_data:
                         # if set, disable importing animations if no skeleton asset is found
                         generic_mesh_anim_pipeline.import_only_animations=False
                         skeleton_asset=None
+                        unreal.log('generating new skeleton')
                     else:
                         skeleton_asset = unreal.load_asset(skeleton_data)
+                        unreal.log(f'joining: {skeleton_asset}')
                         # error handling for invalid skeleton asset
                         if not skeleton_asset:
                             unreal.log_warning(f'unrealLoader.py: Skeleton asset {skeleton_data} cannot be loaded, make sure skeleton asset is valid.')
                             skeleton_asset=None
+                    unreal.log(skeleton_asset)
                     # assign existing skeleton asset to newly imported skeletal meshes & animations
                     generic_mesh_anim_pipeline.skeleton=skeleton_asset
 
