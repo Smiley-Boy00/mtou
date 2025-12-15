@@ -15,7 +15,7 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 **Important**: As of the latest release, manual installation/linking is required for Unreal Engine integration (unrealLoader.py).
 
 ## :bulb: Tool Source Code and Details
-### Current Version: 0.1.0
+### Current Release: 0.2.1
 ### Maya Tools Source Code:
 **Maya to Unreal Exporter (Maya_Scripts/mtouExporter.py): ver. 0.1.0**  
 **Compatibility**: Maya 2024 and above
@@ -30,7 +30,7 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 
 
 ## :bookmark_tabs: :sparkles: How to Install
-[![Installation Video](https://img.shields.io/badge/Installation%20Video-FF0000?logo=youtube&logoColor=white)](https://youtu.be/UFCAix7e9P0?si=rGiChizTKa-uswKb)
+[![Installation Video](https://img.shields.io/badge/Installation%20Video-FF0000?logo=youtube&logoColor=white)](https://youtu.be/eiXnYpwpQRU)
 
 ### Maya Side:
 > - Extract **mtou** and place the folder contents into your Maya directory folder and inside your plug-ins folder, if no plug-ins folder exists create one:
@@ -52,7 +52,6 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 
 [![Download Release](https://img.shields.io/github/v/release/Smiley-Boy00/mtou?label=Download&color=blue)](https://github.com/Smiley-Boy00/mtou/releases/latest)  
 
-> 📦 Current Version: **v0.1.0**  
 > 🛠 This tool is in **Alpha**: Expect changes and possible bugs as I add new features and improve workflows.  
 > ✅ **Free for Commercial Use**: This tool can be used for both personal and professional projects without restrictions.  
 > ⚠️ **No Resale or Redistribution**: This tool cannot be resold or redistributed for commercial intent.  
