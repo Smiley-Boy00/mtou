@@ -419,8 +419,7 @@ class mtouExporterUI():
                                      offCommand=lambda arg:self.anim_build_state('unreal', imp_anim_id,
                                                                                  'imp_only_anims'))
 
-        # build animation import configurations frame layout, hidden by default
-        # unhide layout if it already exists
+        # build animation import configurations frame layout
         if mc.control(unreal_anim_frame_id, exists=True):
             mc.control(unreal_anim_frame_id, edit=True, vis=True)
         else:
@@ -464,7 +463,7 @@ class mtouExporterUI():
                                                        contains_list=True, jnts=jnts))
 
     def build_obj_ui_settings(self):
-        ''' Handles the UI elements of the FBX export and import settings. '''
+        ''' Handles the UI elements of the OBJ export and import settings. '''
         # re-enable exporter UI elements if they were disabled by clips UI
         mc.control(self.filename_field, edit=True, vis=True)
         mc.control('batch_export', edit=True, en=True)
