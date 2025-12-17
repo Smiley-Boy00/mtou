@@ -7,7 +7,7 @@ import os
 
 def maya_useNewAPI():
     """
-    Internal function: tells Maya that the plugin produces and
+    Internal function: tells Maya that the plugin data and
     objects are created using the Maya Python API 2.0.
     """
     pass
