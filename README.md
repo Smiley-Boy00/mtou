@@ -27,7 +27,7 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 ### ⚠️ Experimental | WIP
 *   **New Experimental Module:** Exporter now includes 'Bind Unused Joints', a new module function that finds and binds any unused joints within the selected joint chain to an existing skin cluster. This aims to ensure all joints in a hierarchy are included in the skinning data, even if they initially have no weights (e.g. **End_Joints**).
   
-*   **Experimental Module:** 'unrealLoader.py' contains fix_name_import_handling() which tries to handle naming conventions annoyance; Unreal (Interchange Manager) imports skeleletal assets and dependencies with source file name even if directly specifies. The module is functioning but inactive from the current import process.
+*   **Experimental Module:** 'unrealLoader.py' contains fix_name_import_handling() which tries to handle naming conventions annoyance; Unreal (Interchange Manager) imports skeleletal assets and dependencies with source file name even if directly specified to not bring source name. The module is functioning but inactive from the current import process.
   
 *   **Experimental Module:**  'unrealLoader.py' contains create_imported_asset_data() which stores string data from every imported asset to UE Project. The module is functioning but inactive due to no practical use for the current import process.
 
