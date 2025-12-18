@@ -15,6 +15,20 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 
 **Important**: As of the latest release, manual installation/linking is required for Unreal Engine integration (unrealLoader.py).
 
+## ✨ Features
+
+*   Direct export from Maya to Unreal Engine
+*   Import settings generation based on Maya's export configuration
+*   Custom folder path support within UE project's Content folder
+*   **New:** Handles animation data for export and import, including animation clips.
+*   **New:** Supports joint chains and hierarchy preservation.
+*   **New:** Allows selection of existing skeletons within the scene for animation export.
+
+### ⚠️ Experimental | WIP
+*   **New Experimental Module:** Exporter now includes 'Bind Unused Joints', a new module function that finds and binds any unused joints within the selected joint chain to an existing skin cluster. This aims to ensure all joints in a hierarchy are included in the skinning data, even if they initially have no weights (e.g. **End_Joints**).
+*   **Experimental Module:** 'unrealLoader.py' contains fix_name_import_handling() which tries to handle naming conventions annoyance; Unreal (Interchange Manager) imports skeleletal assets and dependencies with source file name even if directly specifies. The module is functioning but inactive from the current import process.
+*   **Experimental Module:**  'unrealLoader.py' contains create_imported_asset_data() which stores string data from every imported asset to UE Project. The module is functioning but inactive due to no practical use for the current import process.
+
 ## :bulb: Tool Source Code and Details
 ### Current Release: v0.3.0
 ### Maya Tools Source Code:
@@ -27,7 +41,7 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 **Maya to Unreal Importer (Unreal_Scripts/unrealLoader.py): ver. 0.2.0**  
 **Compatibility**: Unreal Engine 5.5 and Unreal Engine 5.6  
 
-**Details**: Saves and stores the currently active Unreal project path, required to be run inside a compatible Unreal Engine 5 project in order for the Maya Exporter to execute, but Unreal Importer can be executed indepentently as long as import settings data exists (see source code for details). The Reload Button functionality has been merged into this script, allowing it to re-save the active Unreal project path. Additionally, a new import button icon has been added next to the reload button, which runs an automatic importer script using the import settings data created from the Maya tool.  
+**Details**: Saves and stores the currently active Unreal project path, required to be run inside a compatible Unreal Engine 5 project in order for the Maya Exporter to execute, but Unreal Importer can be executed indepentently as long as import settings data exists (detailed inside 'unrealLoader.py'). The Reload Button functionality has been merged into this script, allowing it to re-save the active Unreal project path. Additionally, a new import button icon has been added next to the reload button, which runs an automatic importer script using the import settings data created from the Maya tool.  
 
 
 ## :bookmark_tabs: :sparkles: How to Install
