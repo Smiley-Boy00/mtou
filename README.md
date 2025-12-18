@@ -90,6 +90,6 @@ If you encounter a problem or have an idea for improvement:
 
 Want to connect, ask a question, or collaborate? Here's how to reach me:  
 
-- 📧 **Email:** david.e.margon@hotmail.com  
+- 📧 **Email:** davidmartinez3dtech@gmail.com  
 - 💬 **Discord:** `smiley_boy`  
-- 🌐 **Portfolio / Website:** [Artstation](https://www.artstation.com/david_martinez)  
+- 🌐 **Portfolio / Website:** [Artstation](https://www.artstation.com/davidmartinez3dtech)  
