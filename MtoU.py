@@ -15,7 +15,7 @@ def maya_useNewAPI():
 # provide specific plugin functions to run internal mel commands 
 def initializePlugin(pluginObject):
     ''' Initializes OpenMaya.MFnPlugin and passes a MObject(pluginObject) created at run time. '''
-    plugin_data=om.MFnPlugin(pluginObject, 'Smiley', '0.1.0' , 'Any')
+    plugin_data=om.MFnPlugin(pluginObject, 'Smiley', '0.3.0 ALPHA' , 'Any')
     
     # load the plugin path, find and append the 'Maya_Scripts' as active scripts directory
     plugin_path=plugin_data.loadPath()
