@@ -32,9 +32,9 @@ MtoU (Maya to Unreal) is a Python-based tool package that enables seamless expor
 *   **Experimental Module:**  'unrealLoader.py' contains create_imported_asset_data() which stores string data from every imported asset to UE Project. The module is functioning but inactive due to no practical use for the current import process.
 
 ## :bulb: Tool Source Code and Details
-### Current Release: v0.3.0
+### Current Release: v0.3.1
 ### Maya Tools Source Code:
-**Maya to Unreal Exporter (Maya_Scripts/mtouExporter.py): ver. 0.3.0**  
+**Maya to Unreal Exporter (Maya_Scripts/mtouExporter.py): ver. 0.3.1**  
 **Compatibility**: Maya 2024 and above
 
 **Details**: Generates Exporter UI that allows you to directly export assets to your currently loaded UE project, input or generate a folder path anywhere inside the UE project's Content folder to import your assets. The tool now automatically generates import settings for Unreal based on your Maya configuration inside the Exporter UI. 'unrealLoader.py' Requires to be run inside a compatible Unreal Engine 5 project in order for the Exporter to execute.  
